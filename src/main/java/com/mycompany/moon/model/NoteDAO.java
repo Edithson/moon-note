@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 public class NoteDAO {
     
-    public int insert(int categorie, String titre, String contenu){
+    public static int insert(int categorie, String titre, String contenu){
         String sql = "INSERT INTO notes(titre, contenu, created_at, updated_at, deleted_at, categorie_id) VALUES (?, ?, ?, ?, ?, ?)";
         LocalDateTime currentDateTime = LocalDateTime.now();
         int nexID = -1;

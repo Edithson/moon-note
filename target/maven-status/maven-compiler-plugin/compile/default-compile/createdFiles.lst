@@ -1,4 +1,5 @@
 com/mycompany/moon/model/CategoryDAO.class
+com/mycompany/moon/model/NoteDAO.class
+com/mycompany/moon/view/Home.class
 com/mycompany/moon/Moon.class
 com/mycompany/moon/DBManager.class
-com/mycompany/moon/model/NoteDAO.class

@@ -7,10 +7,16 @@ package com.mycompany.moon;
 import java.sql.Connection;
 import com.mycompany.moon.model.CategoryDAO;
 import com.mycompany.moon.model.NoteDAO;
+import com.mycompany.moon.view.Home;
 
 public class Moon {
 
     public static void main(String[] args) {
+        /*
+        Accueil accueil = new Accueil();
+        accueil.setVisible(true);
+        */
+        java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
         System.out.println("Lancement du Bloc-Notes...");
         
         // 1. Tester la connexion
@@ -20,8 +26,10 @@ public class Moon {
                 DBManager.createNewTables();
                 
                 // création d'une catégorie
+                /*
                 NoteDAO note = new NoteDAO();
                 note.insert(1, "test", "contenu juste pour tester le truc");
+                */
                 
                 System.out.println("Démarrage de l'application terminé.");
             }
