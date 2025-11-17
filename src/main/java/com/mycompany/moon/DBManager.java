@@ -6,6 +6,8 @@ package com.mycompany.moon;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -66,6 +68,67 @@ public class DBManager {
 
         } catch (SQLException e) {
             System.err.println("Erreur lors de la création des tables : " + e.getMessage());
+        }
+    }
+    
+    public static int write(String sql, String[] values){
+        int newId = -1;
+
+        // Le try-with-resources assure la fermeture de la connexion et du statement
+        try (Connection conn = DBManager.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            // 1. Configurer les paramètres de la requête
+            for (int i = 1; i <= values.length; i++) {
+                pstmt.setString(i, values[i-1]);
+            }
+
+            // 2. Exécuter l'insertion
+            int affectedRows = pstmt.executeUpdate();
+            
+            if (affectedRows > 0) {
+                // 3. Récupérer l'ID auto-généré par SQLite
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        newId = rs.getInt(1);
+                        System.out.println("Elément inséré avec succès. ID: " + newId);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de l'insertion de l'élément : " + e.getMessage());
+        }
+        return newId;
+    }
+    
+    public static ResultSet read(String sql){
+        ResultSet rs = null;
+        try {
+            Connection cnx = DBManager.connect();
+            Statement stmt = cnx.createStatement();
+            rs = stmt.executeQuery(sql);
+            System.out.println("requete executée avec succes");
+        } catch (SQLException e) {
+            System.err.println("Une erreur s'est produite\n"+e.getMessage());
+        } finally {
+            return rs;
+        }
+    }
+    
+    public static ResultSet read(String sql, String[] values){
+        ResultSet rs = null;
+        try {
+            Connection cnx = DBManager.connect();
+            PreparedStatement pstmt = cnx.prepareStatement(sql);
+            for (int i = 1; i <= values.length; i++) {
+                pstmt.setString(i, values[i-1]);
+            }
+            rs = pstmt.executeQuery(sql);
+            System.out.println("requete executée avec succes");
+        } catch (SQLException e) {
+            System.err.println("Une erreur s'est produite\n"+e.getMessage());
+        } finally {
+            return rs;
         }
     }
 }

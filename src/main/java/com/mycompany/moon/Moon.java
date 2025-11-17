@@ -8,6 +8,7 @@ import java.sql.Connection;
 import com.mycompany.moon.model.CategoryDAO;
 import com.mycompany.moon.model.NoteDAO;
 import com.mycompany.moon.view.Home;
+import java.sql.ResultSet;
 
 public class Moon {
 
@@ -16,7 +17,7 @@ public class Moon {
         Accueil accueil = new Accueil();
         accueil.setVisible(true);
         */
-        java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
+        //java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
         System.out.println("Lancement du Bloc-Notes...");
         
         // 1. Tester la connexion
@@ -26,10 +27,16 @@ public class Moon {
                 DBManager.createNewTables();
                 
                 // création d'une catégorie
-                /*
                 NoteDAO note = new NoteDAO();
-                note.insert(1, "test", "contenu juste pour tester le truc");
+                /*
+                note.delete(4);
                 */
+                
+                ResultSet rs = note.read();
+                while(rs.next()){
+                    System.out.println("id : "+rs.getString("id")+" # Titre : "+rs.getString("titre")+" # Catégorie : "+rs.getString("categorie_nom")+"\n");
+                }
+                
                 
                 System.out.println("Démarrage de l'application terminé.");
             }
