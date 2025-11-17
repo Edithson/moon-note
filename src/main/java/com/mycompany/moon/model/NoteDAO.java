@@ -71,7 +71,7 @@ public class NoteDAO {
     }
     
     public List<Map<String, Object>> read(int id) {
-        String sql = "SELECT * FROM notes WHERE id=?";
+        String sql = "SELECT notes.*, categories.nom as categorie_nom FROM notes, categories WHERE notes.id=? AND notes.categorie_id=categories.id";
         String[] values = { String.valueOf(id) };
 
         try {

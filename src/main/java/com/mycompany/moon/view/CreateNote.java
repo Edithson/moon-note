@@ -22,12 +22,14 @@ public class CreateNote extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreateNote.class.getName());
 
     private ArrayList<Integer> tab_id_cat = new ArrayList<>();
+    private Home home;
     /**
      * Creates new form CreateNote
      */
-    public CreateNote() {
+    public CreateNote(Home home) {
         initComponents();
         CategoryDAO cat = new CategoryDAO();
+        this.home = home;
         try {
             List<Map<String, Object>> list_cat = cat.read();
             for (Map<String, Object> list : list_cat) {
@@ -59,6 +61,12 @@ public class CreateNote extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("moon note - create note");
+        setAlwaysOnTop(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("JetBrains Mono NL SemiBold", 0, 24)); // NOI18N
         jLabel1.setText("Moon note");
@@ -162,8 +170,16 @@ public class CreateNote extends javax.swing.JFrame {
         int id_categorie = tab_id_cat.get(index);
 
         NoteDAO.insert(id_categorie, title, content);
-        JOptionPane.showMessageDialog(rootPane, title+" "+content+" "+id_categorie);
+        this.home.fill_note_list();
+        this.dispose();
+        JOptionPane.showMessageDialog(null, "Note ajoutée !");
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosed
+
 
     /**
      * @param args the command line arguments

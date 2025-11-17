@@ -23,14 +23,16 @@ public class EditNote extends javax.swing.JFrame {
 
     private ArrayList<Integer> tab_id_cat = new ArrayList<>();
     private int id_note, id_categorie;
+    private Home home;
     /**
      * Creates new form CreateNote
      */
-    public EditNote(int id_note) {
+    public EditNote(int id_note, Home home) {
         initComponents();
         this.id_note = id_note;
         CategoryDAO cat = new CategoryDAO();
         NoteDAO note = new NoteDAO();
+        this.home = home;
         
         try {
             List<Map<String, Object>> note_data = note.read(this.id_note);
@@ -178,6 +180,7 @@ public class EditNote extends javax.swing.JFrame {
         int id_categorie = tab_id_cat.get(index);
 
         NoteDAO.update(id_note, id_categorie, title, content);
+        this.home.fill_note_list();
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import tools.TimeConvert;
 
 /**
  *
@@ -42,6 +44,7 @@ public class Home extends javax.swing.JFrame {
     private void initComponents() {
 
         jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
@@ -50,6 +53,10 @@ public class Home extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+
+        jMenuItem3.setText("Consulter");
+        jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
+        jPopupMenu1.add(jMenuItem3);
 
         jMenuItem2.setText("Modifier");
         jMenuItem2.setName("MenuItemModifier"); // NOI18N
@@ -101,7 +108,7 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable1.setFont(new java.awt.Font("JetBrains Mono Medium", 0, 15)); // NOI18N
+        jTable1.setFont(new java.awt.Font("JetBrains Mono NL SemiBold", 0, 17)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -115,6 +122,8 @@ public class Home extends javax.swing.JFrame {
         ));
         jTable1.setComponentPopupMenu(jPopupMenu1);
         jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jTable1.setRowHeight(40);
+        jTable1.setRowMargin(5);
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable1.setUpdateSelectionOnSort(false);
@@ -150,7 +159,7 @@ public class Home extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        CreateNote cn = new CreateNote();
+        CreateNote cn = new CreateNote(this);
         cn.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -184,9 +193,17 @@ public class Home extends javax.swing.JFrame {
         //modification d'une note
         int index = jTable1.getSelectedRow();
         note_id = tab_id_note.get(index);
-        EditNote editForm = new EditNote(note_id);
+        EditNote editForm = new EditNote(note_id, this);
         editForm.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // Consultation des notes
+        int index = jTable1.getSelectedRow();
+        note_id = tab_id_note.get(index);
+        ShowNote showForm = new ShowNote(note_id);
+        showForm.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -213,25 +230,25 @@ public class Home extends javax.swing.JFrame {
         // java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
     }
     
-    private void fill_note_list(){
-        String[] auteur = {"Titre", "Contenu", "Catégorie", "Date de création"};
+    public void fill_note_list(){
+        String[] auteur = {"Titre", "Catégorie", "Date de création"};
         String[] note_data = new String[6];
         DefaultTableModel model = new DefaultTableModel(null, auteur);
         list = note.read();
         try {
             for (Map<String, Object> row : list) {
                 note_data[0] = row.get("titre").toString();
-                note_data[1] = row.get("contenu").toString();
-                note_data[2] = row.get("categorie_nom").toString();
-                note_data[3] = row.get("created_at").toString();
+                note_data[1] = row.get("categorie_nom").toString();
+                note_data[2] = TimeConvert.formatDateTime(row.get("created_at").toString());
                 model.addRow(note_data);
                 tab_id_note.add((Integer)row.get("id"));
             }
-            jTable1.setModel(model);
+            this.jTable1.setModel(model);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Une erreur s'est produite\n"+e.getMessage());
         }
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -239,6 +256,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
