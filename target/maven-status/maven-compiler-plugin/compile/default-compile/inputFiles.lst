@@ -2,6 +2,7 @@
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/Moon.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/model/CategoryDAO.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/model/NoteDAO.java
+/home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/Category.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/CreateNote.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/EditNote.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/Home.java

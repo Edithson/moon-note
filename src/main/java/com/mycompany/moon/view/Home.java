@@ -32,6 +32,7 @@ public class Home extends javax.swing.JFrame {
     public Home() {
         initComponents();
         fill_note_list();
+        System.out.println(">>> Nouvelle instance de Home créée !");
     }
 
     /**
@@ -76,7 +77,8 @@ public class Home extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("JetBrains Mono NL SemiBold", 0, 24)); // NOI18N
         jLabel1.setText("Moon note");
 
-        jButton1.setText("Nouvelle catégorie");
+        jButton1.setText("Catégorie");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jButton2.setText("Nouvelle note");
         jButton2.addActionListener(this::jButton2ActionPerformed);
@@ -205,6 +207,12 @@ public class Home extends javax.swing.JFrame {
         showForm.setVisible(true);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Ouverture du formulaire des catégorie
+        Category catForm = new Category();
+        catForm.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -232,9 +240,11 @@ public class Home extends javax.swing.JFrame {
     
     public void fill_note_list(){
         String[] auteur = {"Titre", "Catégorie", "Date de création"};
-        String[] note_data = new String[6];
+        String[] note_data = new String[3];
         DefaultTableModel model = new DefaultTableModel(null, auteur);
         list = note.read();
+        tab_id_note.clear();
+
         try {
             for (Map<String, Object> row : list) {
                 note_data[0] = row.get("titre").toString();
