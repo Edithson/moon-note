@@ -17,25 +17,41 @@ import java.util.Map;
  *
  * @author edithson
  */
-public class CreateNote extends javax.swing.JFrame {
+public class EditNote extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreateNote.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditNote.class.getName());
 
     private ArrayList<Integer> tab_id_cat = new ArrayList<>();
+    private int id_note, id_categorie;
     /**
      * Creates new form CreateNote
      */
-    public CreateNote() {
+    public EditNote(int id_note) {
         initComponents();
+        this.id_note = id_note;
         CategoryDAO cat = new CategoryDAO();
+        NoteDAO note = new NoteDAO();
+        
         try {
+            List<Map<String, Object>> note_data = note.read(this.id_note);
             List<Map<String, Object>> list_cat = cat.read();
+            
+            for (Map<String, Object> list : note_data) {
+                jTextField1.setText(list.get("titre").toString());
+                jTextArea1.setText(list.get("contenu").toString());
+                id_categorie = (Integer)list.get("categorie_id");
+            }
+            int index = 0;
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
+                if (id_categorie == (Integer)list.get("id")) {
+                    jComboBox1.setSelectedIndex(index);
+                }
                 tab_id_cat.add((Integer)list.get("id"));
+                index++;
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
+            JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des attributs de la note...\n"+e.getLocalizedMessage());
         }
     }
 
@@ -58,7 +74,7 @@ public class CreateNote extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("moon note - create note");
+        setTitle("moon note - edit note");
 
         jLabel1.setFont(new java.awt.Font("JetBrains Mono NL SemiBold", 0, 24)); // NOI18N
         jLabel1.setText("Moon note");
@@ -161,8 +177,8 @@ public class CreateNote extends javax.swing.JFrame {
         int index = jComboBox1.getSelectedIndex();
         int id_categorie = tab_id_cat.get(index);
 
-        NoteDAO.insert(id_categorie, title, content);
-        JOptionPane.showMessageDialog(rootPane, title+" "+content+" "+id_categorie);
+        NoteDAO.update(id_note, id_categorie, title, content);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

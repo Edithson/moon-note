@@ -6,6 +6,9 @@ package com.mycompany.moon.model;
 
 import java.sql.ResultSet;
 import com.mycompany.moon.DBManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CategoryDAO {
     
@@ -55,16 +58,14 @@ public class CategoryDAO {
         return newId;
     }
     
-    public ResultSet read(){
-        ResultSet rs = null;
+    public List<Map<String, Object>> read(){
         String sql = "SELECT * FROM categories ORDER BY nom ASC";
         try {
-            rs = DBManager.read(sql);
             System.err.println("Catégories reccuperées avec succes");
+            return DBManager.read(sql);
         } catch (Exception e) {
             System.err.println("Une erreur s'est produite lors de la reccupération des catégories\n"+e.getLocalizedMessage());
-        } finally {
-            return rs;
+            return new ArrayList<>();
         }
     }
 }

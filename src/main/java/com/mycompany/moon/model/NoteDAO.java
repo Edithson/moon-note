@@ -11,6 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import com.mycompany.moon.DBManager;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class NoteDAO {
     
@@ -56,17 +59,28 @@ public class NoteDAO {
         return nexID;
     }
     
-    public ResultSet read(){
-        ResultSet rs = null;
+    public List<Map<String, Object>> read(){
         String sql = "SELECT notes.*, categories.nom as categorie_nom FROM notes, categories WHERE deleted_at IS NULL AND notes.categorie_id=categories.id ORDER BY created_at DESC";
         try {
-            rs = DBManager.read(sql);
-            System.err.println("notes reccuperées avec succes");
+            System.out.println("notes reccuperées avec succes");
+            return DBManager.read(sql);
         } catch (Exception e) {
             System.err.println("Une erreur s'est produite lors de la reccupération des notes\n"+e.getLocalizedMessage());
-        } finally {
-            return rs;
+            return new ArrayList<>();
         }
     }
+    
+    public List<Map<String, Object>> read(int id) {
+        String sql = "SELECT * FROM notes WHERE id=?";
+        String[] values = { String.valueOf(id) };
+
+        try {
+            return DBManager.read(sql, values);
+        } catch (Exception e) {
+            System.err.println("Erreur NoteDAO.read : " + e.getMessage());
+            return new ArrayList<>(); // jamais null !
+        }
+    }
+
     
 }

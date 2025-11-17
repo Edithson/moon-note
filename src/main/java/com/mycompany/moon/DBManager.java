@@ -8,8 +8,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBManager {
     // Nom du fichier de la base de données
@@ -101,34 +106,73 @@ public class DBManager {
         return newId;
     }
     
-    public static ResultSet read(String sql){
-        ResultSet rs = null;
-        try {
-            Connection cnx = DBManager.connect();
-            Statement stmt = cnx.createStatement();
-            rs = stmt.executeQuery(sql);
-            System.out.println("requete executée avec succes");
+    public static List<Map<String, Object>> read(String sql) {
+        List<Map<String, Object>> elements = new ArrayList<>();
+
+        try (Connection cnx = DBManager.connect();
+             Statement stmt = cnx.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+
+                for (int i = 1; i <= columnCount; i++) {
+                    String column = meta.getColumnName(i);
+                    Object value = rs.getObject(i);
+                    row.put(column, value);
+                }
+
+                elements.add(row);
+            }
+
+            System.out.println("Requête exécutée avec succès");
+
         } catch (SQLException e) {
-            System.err.println("Une erreur s'est produite\n"+e.getMessage());
-        } finally {
-            return rs;
+            System.err.println("Erreur SQL : " + e.getMessage());
         }
+
+        return elements;
     }
     
-    public static ResultSet read(String sql, String[] values){
-        ResultSet rs = null;
-        try {
-            Connection cnx = DBManager.connect();
-            PreparedStatement pstmt = cnx.prepareStatement(sql);
-            for (int i = 1; i <= values.length; i++) {
-                pstmt.setString(i, values[i-1]);
+    public static List<Map<String, Object>> read(String sql, String[] values) {
+        List<Map<String, Object>> elements = new ArrayList<>();
+
+        try (Connection cnx = DBManager.connect();
+             PreparedStatement pstmt = cnx.prepareStatement(sql)) {
+
+            // Injecte les paramètres
+            for (int i = 0; i < values.length; i++) {
+                pstmt.setString(i + 1, values[i]);
             }
-            rs = pstmt.executeQuery(sql);
-            System.out.println("requete executée avec succes");
+
+            // Exécute la requête
+            ResultSet rs = pstmt.executeQuery();
+
+            // Récupère les meta après executeQuery
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            // Parcours des résultats
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(meta.getColumnName(i), rs.getObject(i));
+                }
+
+                elements.add(row);
+            }
+
+            System.out.println("Requête exécutée avec succès");
+
         } catch (SQLException e) {
-            System.err.println("Une erreur s'est produite\n"+e.getMessage());
-        } finally {
-            return rs;
+            System.err.println("Erreur dans read: " + e.getMessage());
         }
+
+        return elements;
     }
+
 }

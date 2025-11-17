@@ -4,6 +4,14 @@
  */
 package com.mycompany.moon.view;
 
+import com.mycompany.moon.model.NoteDAO;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author edithson
@@ -12,11 +20,16 @@ public class Home extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Home.class.getName());
 
+    private NoteDAO note = new NoteDAO();
+    private ArrayList<Integer> tab_id_note = new ArrayList<>();
+    private int note_id = 0;
+    List<Map<String, Object>> list = null;
     /**
      * Creates new form Home
      */
     public Home() {
         initComponents();
+        fill_note_list();
     }
 
     /**
@@ -28,12 +41,25 @@ public class Home extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+
+        jMenuItem2.setText("Modifier");
+        jMenuItem2.setName("MenuItemModifier"); // NOI18N
+        jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
+        jPopupMenu1.add(jMenuItem2);
+
+        jMenuItem1.setText("Supprimer");
+        jMenuItem1.setName("MenuItemSupp"); // NOI18N
+        jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
+        jPopupMenu1.add(jMenuItem1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("moon note - home");
@@ -75,6 +101,7 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jTable1.setFont(new java.awt.Font("JetBrains Mono Medium", 0, 15)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -86,6 +113,16 @@ public class Home extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setComponentPopupMenu(jPopupMenu1);
+        jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.setUpdateSelectionOnSort(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTable1MouseReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -117,6 +154,40 @@ public class Home extends javax.swing.JFrame {
         cn.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
+        int index = jTable1.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
+        //JOptionPane.showConfirmDialog(rootPane, "Note sélectionnée = "+model.getValueAt(index, 1).toString());
+        note_id = tab_id_note.get(index);
+    }//GEN-LAST:event_jTable1MouseReleased
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // suppression d'une note
+        int index = jTable1.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
+        note_id = tab_id_note.get(index);
+        int choix = JOptionPane.showConfirmDialog(
+            this,
+            "Voulez-vous vraiment supprimer la note ?",
+            "Confirmation",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        if (choix == JOptionPane.YES_OPTION) {
+            note.delete(note_id);
+            fill_note_list();
+        }
+        
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        //modification d'une note
+        int index = jTable1.getSelectedRow();
+        note_id = tab_id_note.get(index);
+        EditNote editForm = new EditNote(note_id);
+        editForm.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -141,12 +212,35 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         // java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
     }
+    
+    private void fill_note_list(){
+        String[] auteur = {"Titre", "Contenu", "Catégorie", "Date de création"};
+        String[] note_data = new String[6];
+        DefaultTableModel model = new DefaultTableModel(null, auteur);
+        list = note.read();
+        try {
+            for (Map<String, Object> row : list) {
+                note_data[0] = row.get("titre").toString();
+                note_data[1] = row.get("contenu").toString();
+                note_data[2] = row.get("categorie_nom").toString();
+                note_data[3] = row.get("created_at").toString();
+                model.addRow(note_data);
+                tab_id_note.add((Integer)row.get("id"));
+            }
+            jTable1.setModel(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Une erreur s'est produite\n"+e.getMessage());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
