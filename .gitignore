@@ -1,0 +1,52 @@
+# ------------------------------------
+# 1. Dossiers et fichiers générés par Maven
+# ------------------------------------
+# Le dossier "target" contient toutes les classes compilées, les JARs, etc.
+target/
+
+# Le fichier pom réduit est généré par le plugin maven-shade-plugin
+# dependency-reduced-pom.xml
+
+# ------------------------------------
+# 2. Artefacts de déploiement
+# ------------------------------------
+# Le dossier "deploy" contient les packages d'installation (par ex. .deb).
+# Ces fichiers sont des sorties de build et ne devraient pas être dans Git.
+deploy/
+
+# ------------------------------------
+# 3. Runtime et dépendances packagées
+# ------------------------------------
+# Le dossier "moon_runtime" semble être une copie du JRE/JDK ou un JRE customisé.
+# C'est une grande quantité de fichiers qui devrait être générée/gérée
+# par l'outil de packaging (comme jlink/jpackage) et non par Git.
+moon_runtime/
+
+# ------------------------------------
+# 4. Fichiers spécifiques à l'utilisateur/IDE (Optionnel)
+# ------------------------------------
+# Si vous utilisez un IDE spécifique (comme NetBeans, IntelliJ, Eclipse),
+# vous devrez peut-être ajouter des exclusions supplémentaires ici.
+
+# Exemple IntelliJ IDEA (souvent utilisé en Java)
+.idea/
+*.iml
+
+# Exemple NetBeans
+nbproject/
+*.nbattrs
+
+# ------------------------------------
+# 5. Fichiers de données ou de log locaux
+# ------------------------------------
+# La base de données locale (notepad.db) est probablement une donnée de test/locale.
+# Si elle contient des données utilisateur qui doivent être versionnées, retirez cette ligne.
+# Sinon, elle doit être ignorée.
+*.db
+# Si le fichier s'appelle toujours "notepad.db" :
+# notepad.db 
+
+# ------------------------------------
+# 6. Fichiers de log
+# ------------------------------------
+*.log
