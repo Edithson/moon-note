@@ -5,12 +5,16 @@
 package com.mycompany.moon;
 
 import java.sql.Connection;
-import com.mycompany.moon.model.CategoryDAO;
-import com.mycompany.moon.model.NoteDAO;
+import com.mycompany.moon.view.Home;
+import tools.ExportManager;
 
 public class Moon {
 
     public static void main(String[] args) {
+        // System.out.println("Exportation des données...");
+        // ExportManager.exportDatabase();
+
+        java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
         System.out.println("Lancement du Bloc-Notes...");
         
         // 1. Tester la connexion
@@ -18,11 +22,7 @@ public class Moon {
             if (conn != null) {
                 System.out.println("Test de connexion réussi. Le fichier "+ DBManager.DB_NAME +" est prêt.");
                 DBManager.createNewTables();
-                
-                // création d'une catégorie
-                NoteDAO note = new NoteDAO();
-                note.insert(1, "test", "contenu juste pour tester le truc");
-                
+
                 System.out.println("Démarrage de l'application terminé.");
             }
         } catch (Exception e) {

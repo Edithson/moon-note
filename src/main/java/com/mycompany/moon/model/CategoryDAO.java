@@ -4,42 +4,74 @@
  */
 package com.mycompany.moon.model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import com.mycompany.moon.DBManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CategoryDAO {
     
     public int insert(String name) {
         String sql = "INSERT INTO categories(nom) VALUES(?)";
+        String[] values = {name};
         int newId = -1;
-
-        // Le try-with-resources assure la fermeture de la connexion et du statement
-        try (Connection conn = DBManager.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            // 1. Configurer les paramètres de la requête
-            pstmt.setString(1, name);
-
-            // 2. Exécuter l'insertion
-            int affectedRows = pstmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                // 3. Récupérer l'ID auto-généré par SQLite
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        newId = rs.getInt(1);
-                        System.out.println("Catégorie insérée avec succès. ID: " + newId);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            // Gérer l'erreur, notamment si le nom de catégorie existe déjà (UNIQUE constraint)
-            System.err.println("Erreur lors de l'insertion de la catégorie '" + name + "': " + e.getMessage());
+        try {
+            newId = DBManager.write(sql, values);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'insertion de la catégorie : "+e.getLocalizedMessage());
         }
         return newId;
+    }
+    
+    public int update(int id, String name) {
+        if(id == 1) {
+            System.err.println("Impossible de modifier la catégorie de base");
+            return -1;
+        };
+        String sql = "UPDATE categories SET nom=? WHERE id=?";
+        String[] values = {name, String.valueOf(id)};
+        int newId = -1;
+        try {
+            newId = DBManager.write(sql, values);
+            System.out.println("Catégotie mise à jour avec succes");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la mise à jour de la catégorie : "+e.getLocalizedMessage());
+        }
+        return newId;
+    }
+    
+    public int delete(int id) {
+        // mettre dabord à jour les notes dans une autres catégories
+        if(id == 1) {
+            System.err.println("Impossible de supprimer la catégorie de base");
+            return -1;
+        };
+        String note_sql = "UPDATE notes SET categorie_id=? WHERE categorie_id=?";
+        String[] note_vl = {"1", String.valueOf(id)};
+        String sql = "DELETE FROM categories WHERE id=?";
+        String[] values = {String.valueOf(id)};
+        int newId = -1;
+        try {
+            DBManager.write(note_sql, note_vl);
+            newId = DBManager.write(sql, values);
+            System.out.println("Catégorie supprimée avec succes!");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'insertion de la catégorie : "+e.getLocalizedMessage());
+        }
+        return newId;
+    }
+    
+    public List<Map<String, Object>> read(String nom_cat){
+        String searchPattern = "%" + nom_cat + "%";
+        String[] finalValues = new String[]{searchPattern};
+        String sql = "SELECT * FROM categories WHERE nom LIKE ? ORDER BY id DESC";
+        try {
+            System.err.println("Catégories reccuperées avec succes");
+            return DBManager.read(sql, finalValues);
+        } catch (Exception e) {
+            System.err.println("Une erreur s'est produite lors de la reccupération des catégories\n"+e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
     }
 }
