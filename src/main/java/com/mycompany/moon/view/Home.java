@@ -15,6 +15,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import tools.ExportManager;
 import tools.TimeConvert;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import tools.NotificationManager;
 
 /**
  *
@@ -31,11 +34,13 @@ public class Home extends javax.swing.JFrame {
     List<Map<String, Object>> list = null;
     private String search_word = "";
     private int search_cat = 0;
+    public static Home instance;
     /**
      * Creates new form Home
      */
     public Home() {
         initComponents();
+        instance = this;
         CategoryDAO cat = new CategoryDAO();
         System.out.println(">>> Nouvelle instance de Home créée !");
         try {
@@ -50,6 +55,15 @@ public class Home extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
         }
         fill_note_list(search_word, search_cat);
+        try {
+            Image iconImage = new ImageIcon(getClass().getResource("/icons/app_icon.png")).getImage(); 
+            this.setIconImage(iconImage);
+            System.out.println("Image ok");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger l'icône de la fenêtre: " + e.getMessage());
+        }
+        NotificationManager.notify("Moon Note", "Nouvelle note enregistrée !");
+
     }
 
     /**
@@ -89,7 +103,7 @@ public class Home extends javax.swing.JFrame {
         jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
         jPopupMenu1.add(jMenuItem1);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("moon note - home");
         setFont(new java.awt.Font("JetBrains Mono Light", 0, 12)); // NOI18N
         setResizable(false);
@@ -257,7 +271,7 @@ public class Home extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Ouverture du formulaire des catégorie
-        Category catForm = new Category();
+        Category catForm = new Category(this);
         catForm.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -346,6 +360,21 @@ public class Home extends javax.swing.JFrame {
             this.jTable1.setModel(model);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Une erreur s'est produite\n"+e.getMessage());
+        }
+    }
+    
+    public void refresh_cat(){
+        CategoryDAO cat = new CategoryDAO();
+        try {
+            List<Map<String, Object>> list_cat = cat.read("");
+            jComboBox1.addItem("Toutes les catégories");
+            tab_id_cat.add(0);
+            for (Map<String, Object> list : list_cat) {
+                jComboBox1.addItem(list.get("nom").toString());
+                tab_id_cat.add((Integer)list.get("id"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
         }
     }
     

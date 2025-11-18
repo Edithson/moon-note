@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JScrollPane;
+import javax.swing.JEditorPane;
 
 /**
  *

@@ -8,4 +8,6 @@
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/Home.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/com/mycompany/moon/view/ShowNote.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/tools/ExportManager.java
+/home/edithson/NetBeansProjects/Moon/src/main/java/tools/NotificationManager.java
+/home/edithson/NetBeansProjects/Moon/src/main/java/tools/SystemTrayManager.java
 /home/edithson/NetBeansProjects/Moon/src/main/java/tools/TimeConvert.java

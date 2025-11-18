@@ -26,12 +26,14 @@ public class Category extends javax.swing.JFrame {
     List<Map<String, Object>> list = null;
     private CategoryDAO cat = new CategoryDAO();
     private int cat_id;
+    private Home home;
     /**
      * Creates new form Category
      */
-    public Category() {
+    public Category(Home home) {
         initComponents();
         fill_cat_list("");
+        this.home = home;
     }
 
     /**
@@ -144,6 +146,7 @@ public class Category extends javax.swing.JFrame {
             return;
         }
         cat.insert(nom);
+        this.home.refresh_cat();
         jTextField1.setText("");
         fill_cat_list("");
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -178,6 +181,7 @@ public class Category extends javax.swing.JFrame {
         if (choix == JOptionPane.YES_OPTION) {
             cat.delete(cat_id);
             fill_cat_list("");
+            this.home.refresh_cat();
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -223,6 +227,7 @@ public class Category extends javax.swing.JFrame {
             }
             cat.update(cat_id, valeur);
             fill_cat_list("");
+            this.home.refresh_cat();
         }
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
