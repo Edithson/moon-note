@@ -31,7 +31,7 @@ public class CreateNote extends javax.swing.JFrame {
         CategoryDAO cat = new CategoryDAO();
         this.home = home;
         try {
-            List<Map<String, Object>> list_cat = cat.read();
+            List<Map<String, Object>> list_cat = cat.read("");
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
                 tab_id_cat.add((Integer)list.get("id"));
@@ -170,7 +170,7 @@ public class CreateNote extends javax.swing.JFrame {
         int id_categorie = tab_id_cat.get(index);
 
         NoteDAO.insert(id_categorie, title, content);
-        this.home.fill_note_list();
+        this.home.fill_note_list("", 0);
         this.dispose();
         JOptionPane.showMessageDialog(null, "Note ajoutée !");
     }//GEN-LAST:event_jButton1ActionPerformed

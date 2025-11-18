@@ -58,11 +58,13 @@ public class CategoryDAO {
         return newId;
     }
     
-    public List<Map<String, Object>> read(){
-        String sql = "SELECT * FROM categories ORDER BY nom ASC";
+    public List<Map<String, Object>> read(String nom_cat){
+        String searchPattern = "%" + nom_cat + "%";
+        String[] finalValues = new String[]{searchPattern};
+        String sql = "SELECT * FROM categories WHERE nom LIKE ? ORDER BY id DESC";
         try {
             System.err.println("Catégories reccuperées avec succes");
-            return DBManager.read(sql);
+            return DBManager.read(sql, finalValues);
         } catch (Exception e) {
             System.err.println("Une erreur s'est produite lors de la reccupération des catégories\n"+e.getLocalizedMessage());
             return new ArrayList<>();

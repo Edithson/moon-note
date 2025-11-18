@@ -31,7 +31,7 @@ public class Category extends javax.swing.JFrame {
      */
     public Category() {
         initComponents();
-        fill_cat_list();
+        fill_cat_list("");
     }
 
     /**
@@ -64,7 +64,11 @@ public class Category extends javax.swing.JFrame {
         jButton1.setText("Ajouter");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
-        jTextField1.setText("jTextField1");
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -124,7 +128,7 @@ public class Category extends javax.swing.JFrame {
         // Ajout d'une nouvelle catégorie
         String nom = jTextField1.getText().toString();
         cat.insert(nom);
-        fill_cat_list();
+        fill_cat_list("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
@@ -147,7 +151,7 @@ public class Category extends javax.swing.JFrame {
         );
         if (choix == JOptionPane.YES_OPTION) {
             cat.delete(cat_id);
-            fill_cat_list();
+            fill_cat_list("");
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -174,10 +178,16 @@ public class Category extends javax.swing.JFrame {
         if (choice == 0) { // Valider
             String valeur = textField.getText();
             cat.update(cat_id, valeur);
-            fill_cat_list();
+            fill_cat_list("");
         }
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        // recherche de catégorie
+        String nom_cat = jTextField1.getText();
+        fill_cat_list(nom_cat);
+    }//GEN-LAST:event_jTextField1KeyReleased
 
     /**
      * @param args the command line arguments
@@ -204,12 +214,12 @@ public class Category extends javax.swing.JFrame {
         //java.awt.EventQueue.invokeLater(() -> new Category().setVisible(true));
     }
     
-    public void fill_cat_list(){
+    public void fill_cat_list(String nom_cat){
         String[] header = {"nom"};
         String[] note_data = new String[1];
         DefaultTableModel model = new DefaultTableModel(null, header);
         tab_id_cat.clear();
-        list = cat.read();
+        list = cat.read(nom_cat);
         try {
             for (Map<String, Object> row : list) {
                 note_data[0] = row.get("nom").toString();

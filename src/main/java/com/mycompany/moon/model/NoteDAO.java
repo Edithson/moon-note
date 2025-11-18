@@ -59,11 +59,34 @@ public class NoteDAO {
         return nexID;
     }
     
-    public List<Map<String, Object>> read(){
-        String sql = "SELECT notes.*, categories.nom as categorie_nom FROM notes, categories WHERE deleted_at IS NULL AND notes.categorie_id=categories.id ORDER BY created_at DESC";
+    public List<Map<String, Object>> read(String search_word, int search_cat){
+        String sql;
+        String[] finalValues;
+
+        // 1. Préparation de la recherche avec le wildcard SQL
+        String searchPattern = "%" + search_word + "%"; 
+
+        // 2. Définition des requêtes et des paramètres
+        if (search_cat == 0) { // Pas de filtre de catégorie
+            sql = "SELECT n.*, c.nom as categorie_nom FROM notes n "
+                + "JOIN categories c ON n.categorie_id = c.id "
+                + "WHERE n.deleted_at IS NULL AND (n.titre || n.contenu) LIKE ? "
+                + "ORDER BY n.created_at DESC";
+            finalValues = new String[]{searchPattern};
+
+        } else { // Filtre par catégorie
+            sql = "SELECT n.*, c.nom as categorie_nom FROM notes n "
+                + "JOIN categories c ON n.categorie_id = c.id "
+                + "WHERE n.deleted_at IS NULL AND (n.titre || n.contenu) LIKE ? "
+                + "AND n.categorie_id = ? "
+                + "ORDER BY n.created_at DESC";
+
+            // CORRECTION: Utilisation d'un nouveau tableau pour les deux paramètres
+            finalValues = new String[]{searchPattern, String.valueOf(search_cat)};
+        }
         try {
             System.out.println("notes reccuperées avec succes");
-            return DBManager.read(sql);
+            return DBManager.read(sql, finalValues);
         } catch (Exception e) {
             System.err.println("Une erreur s'est produite lors de la reccupération des notes\n"+e.getLocalizedMessage());
             return new ArrayList<>();

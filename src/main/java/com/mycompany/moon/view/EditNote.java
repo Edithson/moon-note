@@ -36,7 +36,7 @@ public class EditNote extends javax.swing.JFrame {
         
         try {
             List<Map<String, Object>> note_data = note.read(this.id_note);
-            List<Map<String, Object>> list_cat = cat.read();
+            List<Map<String, Object>> list_cat = cat.read("");
             
             for (Map<String, Object> list : note_data) {
                 jTextField1.setText(list.get("titre").toString());
@@ -180,7 +180,7 @@ public class EditNote extends javax.swing.JFrame {
         int id_categorie = tab_id_cat.get(index);
 
         NoteDAO.update(id_note, id_categorie, title, content);
-        this.home.fill_note_list();
+        this.home.fill_note_list("", 0);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
