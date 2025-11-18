@@ -25,6 +25,10 @@ public class CategoryDAO {
     }
     
     public int update(int id, String name) {
+        if(id == 1) {
+            System.err.println("Impossible de modifier la catégorie de base");
+            return -1;
+        };
         String sql = "UPDATE categories SET nom=? WHERE id=?";
         String[] values = {name, String.valueOf(id)};
         int newId = -1;

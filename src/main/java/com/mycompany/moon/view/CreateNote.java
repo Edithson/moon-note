@@ -59,9 +59,10 @@ public class CreateNote extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("moon note - create note");
         setAlwaysOnTop(true);
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -71,6 +72,7 @@ public class CreateNote extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("JetBrains Mono NL SemiBold", 0, 24)); // NOI18N
         jLabel1.setText("Moon note");
 
+        jButton1.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jButton1.setText("Ajouter");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
@@ -97,15 +99,20 @@ public class CreateNote extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jComboBox1.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jComboBox1.setToolTipText("");
         jComboBox1.setName("note_category"); // NOI18N
 
+        jTextField1.setFont(new java.awt.Font("JetBrains Mono NL Light", 0, 17)); // NOI18N
         jTextField1.setText("Titre (facultatif)");
         jTextField1.setName("titleField"); // NOI18N
 
         jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("JetBrains Mono NL Light", 0, 17)); // NOI18N
+        jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
         jTextArea1.setText("Contenu");
+        jTextArea1.setWrapStyleWord(true);
         jTextArea1.setName("contentTextArea"); // NOI18N
         jScrollPane1.setViewportView(jTextArea1);
 
@@ -130,7 +137,7 @@ public class CreateNote extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -154,10 +161,11 @@ public class CreateNote extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -165,6 +173,29 @@ public class CreateNote extends javax.swing.JFrame {
         String title, content;
         title = jTextField1.getText();
         content = jTextArea1.getText();
+        if (title == null || title.trim().isEmpty()|| title == " ") {
+            // 2. Définir le titre par défaut à partir du contenu
+            String defaultTitle = content.trim(); 
+            if (defaultTitle.isEmpty()) {
+                // Le contenu est également vide : pas de création de note
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Attention, Le contenue et le titre sont vide", // Le message
+                    "Avertissement", // Le titre de la boîte de dialogue
+                    JOptionPane.WARNING_MESSAGE // Le type de message (icône d'exclamation)
+                );
+                return;
+
+            } else if (defaultTitle.length() <= 20) {
+                // Le contenu a 20 caractères ou moins : utiliser le contenu entier
+                title = defaultTitle;
+
+            } else {
+                // Le contenu a plus de 20 caractères : prendre les 20 premiers
+                // substring(0, 20) prend les caractères de l'index 0 jusqu'à l'index 19 (20 caractères)
+                title = defaultTitle.substring(0, 20) + "..."; // Ajout de "..." pour indiquer la coupure
+            }
+        }
         
         int index = jComboBox1.getSelectedIndex();
         int id_categorie = tab_id_cat.get(index);
@@ -172,7 +203,7 @@ public class CreateNote extends javax.swing.JFrame {
         NoteDAO.insert(id_categorie, title, content);
         this.home.fill_note_list("", 0);
         this.dispose();
-        JOptionPane.showMessageDialog(null, "Note ajoutée !");
+        //JOptionPane.showMessageDialog(null, "Note ajoutée !");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed

@@ -51,25 +51,31 @@ public class Category extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
-        jMenuItem1.setText("jMenuItem1");
+        jMenuItem1.setText("Modifier");
         jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
         jPopupMenu1.add(jMenuItem1);
 
-        jMenuItem2.setText("jMenuItem2");
+        jMenuItem2.setText("Supprimer");
         jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
         jPopupMenu1.add(jMenuItem2);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("moon note - category");
+        setAlwaysOnTop(true);
+        setResizable(false);
 
+        jButton1.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jButton1.setText("Ajouter");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        jTextField1.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
             }
         });
 
+        jTable1.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -107,7 +113,7 @@ public class Category extends javax.swing.JFrame {
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton1)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -122,12 +128,23 @@ public class Category extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Ajout d'une nouvelle catégorie
         String nom = jTextField1.getText().toString();
+        if (nom == null || nom.trim().isEmpty()|| nom == " ") {
+            JOptionPane.showMessageDialog(
+                this,
+                "La catégorie doit avoir un nom valide", // Le message
+                "Erreur", // Le titre de la boîte de dialogue
+                JOptionPane.ERROR_MESSAGE // Le type de message (icône d'exclamation)
+            );
+            return;
+        }
         cat.insert(nom);
+        jTextField1.setText("");
         fill_cat_list("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -142,6 +159,15 @@ public class Category extends javax.swing.JFrame {
         int index = jTable1.getSelectedRow();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         cat_id = tab_id_cat.get(index);
+        if (cat_id == 1) {
+            JOptionPane.showMessageDialog(
+                this, // Fenêtre parente (null pour aucune)
+                "On ne supprime pas la catégorie de base !", // Le message
+                "Erreur", // Le titre de la boîte de dialogue
+                JOptionPane.ERROR_MESSAGE // Le type de message (icône d'exclamation)
+            );
+            return;
+        }
         int choix = JOptionPane.showConfirmDialog(
             this,
             "Voulez-vous vraiment supprimer la catégorie ?\nLes notes associers seront placées dans la catégorie non classé",
@@ -157,26 +183,44 @@ public class Category extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // Mise à jour d'une catégorie
+        if (cat_id == 1) {
+            JOptionPane.showMessageDialog(
+                this, // Fenêtre parente (null pour aucune)
+                "On ne modifie pas la catégorie de base !", // Le message
+                "Erreur", // Le titre de la boîte de dialogue
+                JOptionPane.ERROR_MESSAGE // Le type de message (icône d'exclamation)
+            );
+            return;
+        }
         JTextField textField = new JTextField();
         Object[] message = {
-            "Entrez la nouvelle valeur :", textField
+            "Nom de la catégorie :", textField
         };
 
         Object[] options = {"Valider", "Annuler"};
 
         int choice = JOptionPane.showOptionDialog(
-                null,
-                message,
-                "Saisie",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                options[0]
+            null,
+            message,
+            "Saisie",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]
         );
 
         if (choice == 0) { // Valider
             String valeur = textField.getText();
+            if (valeur == null || valeur.trim().isEmpty() || valeur == " ") {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "La catégorie doit avoir un nom valide", // Le message
+                    "Erreur", // Le titre de la boîte de dialogue
+                    JOptionPane.ERROR_MESSAGE // Le type de message (icône d'exclamation)
+                );
+                return;
+            }
             cat.update(cat_id, valeur);
             fill_cat_list("");
         }

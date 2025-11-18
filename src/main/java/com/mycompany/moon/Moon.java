@@ -6,10 +6,13 @@ package com.mycompany.moon;
 
 import java.sql.Connection;
 import com.mycompany.moon.view.Home;
+import tools.ExportManager;
 
 public class Moon {
 
     public static void main(String[] args) {
+        // System.out.println("Exportation des données...");
+        // ExportManager.exportDatabase();
 
         java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
         System.out.println("Lancement du Bloc-Notes...");

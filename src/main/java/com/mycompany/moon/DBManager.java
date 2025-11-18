@@ -70,9 +70,62 @@ public class DBManager {
             // Exécuter la requête de création de la table notes
             stmt.execute(sqlNotes);
             System.out.println("Table 'notes' vérifiée/créée.");
+            
+            ensureDefaultCategoryExists();
 
         } catch (SQLException e) {
             System.err.println("Erreur lors de la création des tables : " + e.getMessage());
+        }
+    }
+    
+    /**
+     * S'assure que la catégorie de base "Non classé" avec l'ID 1 existe.
+     * Cette méthode doit être appelée après la création des tables.
+     */
+    public static void ensureDefaultCategoryExists() {
+        String name = "Non classé";
+        
+        // Requête pour vérifier si la catégorie existe déjà (soit par ID 1, soit par NOM)
+        String checkSql = "SELECT COUNT(*) FROM categories WHERE id = 1 OR nom = ?";
+        
+        // Requête d'insertion forcée pour l'ID 1 si elle n'existe pas
+        // On utilise INSERT OR IGNORE pour éviter les erreurs si la ligne existe mais a un autre nom.
+        String insertSql = "INSERT OR IGNORE INTO categories (id, nom) VALUES (1, ?)";
+        
+        // Utilisation d'un compteur pour voir si l'insertion est nécessaire
+        int count = 0;
+        
+        try (Connection conn = connect();
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            
+            // 1. VÉRIFICATION
+            checkStmt.setString(1, name);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt(1);
+                }
+            }
+
+            // 2. INSERTION SI NÉCESSAIRE
+            if (count == 0) {
+                // Si la catégorie n'existe pas, on tente de l'insérer avec l'ID 1
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                    insertStmt.setString(1, name);
+                    int affectedRows = insertStmt.executeUpdate();
+                    
+                    if (affectedRows > 0) {
+                        System.out.println("Catégorie par défaut 'Non classé' (ID 1) créée.");
+                    } else {
+                        // Cela arrive si l'ID 1 est déjà pris par autre chose (conflit d'ID)
+                        System.err.println("Avertissement: L'ID 1 de la catégorie est déjà utilisé, 'Non classé' n'a pas pu être insérée comme ID 1.");
+                    }
+                }
+            } else {
+                System.out.println("Catégorie par défaut 'Non classé' (ID 1) déjà présente.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification/création de la catégorie par défaut : " + e.getMessage());
         }
     }
     
