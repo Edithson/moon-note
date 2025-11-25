@@ -45,12 +45,12 @@ public class DBManager {
     public static void createNewTables() {
         // Requêtes SQL pour la création des tables
         String sqlCategories = "CREATE TABLE IF NOT EXISTS categories ("
-                + "id INTEGER PRIMARY KEY,"
+                + "id TEXT PRIMARY KEY,"
                 + "nom TEXT NOT NULL UNIQUE"
                 + ");";
 
         String sqlNotes = "CREATE TABLE IF NOT EXISTS notes ("
-                + "id INTEGER PRIMARY KEY,"
+                + "id TEXT PRIMARY KEY,"
                 + "titre TEXT NOT NULL,"
                 + "contenu TEXT,"
                 + "created_at TEXT NOT NULL," // En SQLite, on utilise TEXT pour les dates

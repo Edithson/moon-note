@@ -20,7 +20,7 @@ import java.util.Map;
  * @author edithson
  */
 class ExportedNote {
-    int id;
+    String id;
     String titre;
     String contenu;
     String created_at;
@@ -29,7 +29,7 @@ class ExportedNote {
     // Constructeur Map -> Objet pour simplifier la conversion
     public ExportedNote(Map<String, Object> data) {
         // Utiliser Integer/String directement si l'objet DBManager retourne ces types
-        this.id = (Integer) data.get("id");
+        this.id = (String) data.get("id");
         this.titre = (String) data.get("titre");
         this.contenu = (String) data.get("contenu");
         this.created_at = (String) data.get("created_at");
@@ -38,13 +38,13 @@ class ExportedNote {
 }
 
 class ExportedCategory {
-    int id;
+    String id;
     String nom;
     List<ExportedNote> notes = new ArrayList<>();
     
     // Constructeur Map -> Objet
     public ExportedCategory(Map<String, Object> data) {
-        this.id = (Integer) data.get("id");
+        this.id = (String) data.get("id");
         this.nom = (String) data.get("nom");
     }
 }
@@ -88,7 +88,7 @@ public class ExportManager {
             // 2. LIRE LES NOTES POUR CHAQUE CATÉGORIE ET CONSTRUIRE LA STRUCTURE
             for (Map<String, Object> categoryMap : categoryMaps) {
                 ExportedCategory exportedCat = new ExportedCategory(categoryMap);
-                int catId = exportedCat.id;
+                String catId = exportedCat.id;
                 
                 // Requête pour lire uniquement les notes non supprimées d'une catégorie spécifique
                 String sqlNotes = "SELECT id, titre, contenu, created_at, updated_at "

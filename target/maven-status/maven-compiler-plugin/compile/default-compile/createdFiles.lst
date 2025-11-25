@@ -1,8 +1,11 @@
 com/mycompany/moon/model/CategoryDAO.class
 com/mycompany/moon/view/Home$1.class
 com/mycompany/moon/view/EditNote.class
+tools/ImportManager.class
+tools/DialogMsg.class
 com/mycompany/moon/model/NoteDAO.class
 tools/SystemTrayManager.class
+tools/UniqueID.class
 tools/ExportedCategory.class
 com/mycompany/moon/view/Category$2.class
 com/mycompany/moon/DBManager.class
@@ -16,5 +19,6 @@ com/mycompany/moon/view/Home.class
 tools/NotificationManager.class
 com/mycompany/moon/view/Category$1.class
 com/mycompany/moon/Moon.class
+tools/ImportManager$1.class
 tools/ExportedNote.class
 com/mycompany/moon/view/CreateNote$1.class

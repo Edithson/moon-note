@@ -6,14 +6,12 @@ package com.mycompany.moon.view;
 
 import com.mycompany.moon.model.CategoryDAO;
 import com.mycompany.moon.model.NoteDAO;
-import java.awt.TextField;
-import java.sql.ResultSet;
+import java.awt.Image;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JScrollPane;
-import javax.swing.JEditorPane;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -23,7 +21,7 @@ public class CreateNote extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreateNote.class.getName());
 
-    private ArrayList<Integer> tab_id_cat = new ArrayList<>();
+    private ArrayList<String> tab_id_cat = new ArrayList<>();
     private Home home;
     /**
      * Creates new form CreateNote
@@ -36,10 +34,18 @@ public class CreateNote extends javax.swing.JFrame {
             List<Map<String, Object>> list_cat = cat.read("");
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
-                tab_id_cat.add((Integer)list.get("id"));
+                tab_id_cat.add(list.get("id").toString());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
+        }
+        
+        try {
+            Image iconImage = new ImageIcon(getClass().getResource("/icons/app_icon.png")).getImage(); 
+            this.setIconImage(iconImage);
+            System.out.println("Image ok");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger l'icône de la fenêtre: " + e.getMessage());
         }
     }
 
@@ -200,12 +206,11 @@ public class CreateNote extends javax.swing.JFrame {
         }
         
         int index = jComboBox1.getSelectedIndex();
-        int id_categorie = tab_id_cat.get(index);
+        String id_categorie = tab_id_cat.get(index);
 
-        NoteDAO.insert(id_categorie, title, content);
-        this.home.fill_note_list("", 0);
         this.dispose();
-        //JOptionPane.showMessageDialog(null, "Note ajoutée !");
+        NoteDAO.insert(id_categorie, title, content);
+        this.home.fill_note_list("", "0");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed

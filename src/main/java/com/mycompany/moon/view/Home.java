@@ -6,17 +6,19 @@ package com.mycompany.moon.view;
 
 import com.mycompany.moon.model.CategoryDAO;
 import com.mycompany.moon.model.NoteDAO;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import tools.ExportManager;
 import tools.TimeConvert;
 import javax.swing.ImageIcon;
 import java.awt.Image;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import tools.DialogMsg;
+import tools.ImportManager;
 import tools.NotificationManager;
 
 /**
@@ -28,12 +30,12 @@ public class Home extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Home.class.getName());
 
     private NoteDAO note = new NoteDAO();
-    private ArrayList<Integer> tab_id_note = new ArrayList<>();
-    private ArrayList<Integer> tab_id_cat = new ArrayList<>();
-    private int note_id = 0;
+    private ArrayList<String> tab_id_note = new ArrayList<>();
+    private ArrayList<String> tab_id_cat = new ArrayList<>();
+    private String note_id = "0";
     List<Map<String, Object>> list = null;
     private String search_word = "";
-    private int search_cat = 0;
+    private String search_cat = "0";
     public static Home instance;
     /**
      * Creates new form Home
@@ -46,10 +48,10 @@ public class Home extends javax.swing.JFrame {
         try {
             List<Map<String, Object>> list_cat = cat.read("");
             jComboBox1.addItem("Toutes les catégories");
-            tab_id_cat.add(0);
+            tab_id_cat.add("0");
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
-                tab_id_cat.add((Integer)list.get("id"));
+                tab_id_cat.add(list.get("id").toString());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
@@ -62,7 +64,7 @@ public class Home extends javax.swing.JFrame {
         } catch (Exception e) {
             System.err.println("Impossible de charger l'icône de la fenêtre: " + e.getMessage());
         }
-        NotificationManager.notify("Moon Note", "Nouvelle note enregistrée !");
+        NotificationManager.notify("Moon Note par GZ", "Vos Notes Stellaires");
 
     }
 
@@ -85,9 +87,12 @@ public class Home extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
         jTextField1 = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         jMenuItem3.setText("Consulter");
         jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
@@ -129,31 +134,34 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("Rechercher");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1))
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)))
-                .addContainerGap())
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
+                .addGap(2, 2, 2)
+                .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -189,8 +197,17 @@ public class Home extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
+        jButton3.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
         jButton3.setText("Exporter les notes");
         jButton3.addActionListener(this::jButton3ActionPerformed);
+
+        jButton4.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
+        jButton4.setText("Actualiser");
+        jButton4.addActionListener(this::jButton4ActionPerformed);
+
+        jButton5.setFont(new java.awt.Font("JetBrains Mono Light", 0, 17)); // NOI18N
+        jButton5.setText("Importer des notes");
+        jButton5.addActionListener(this::jButton5ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -201,9 +218,14 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton3)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(135, 135, 135)
+                        .addComponent(jButton4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton3)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton5)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -214,11 +236,14 @@ public class Home extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4)
+                    .addComponent(jButton5))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(753, 470));
+        setSize(new java.awt.Dimension(753, 503));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -237,7 +262,6 @@ public class Home extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // suppression d'une note
         int index = jTable1.getSelectedRow();
-        DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         note_id = tab_id_note.get(index);
         int choix = JOptionPane.showConfirmDialog(
             this,
@@ -277,12 +301,20 @@ public class Home extends javax.swing.JFrame {
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // recherche lors du changement de catégorie
+        
+        // Vérifier si l'index est valide (pour éviter Index -1)
+        int index = jComboBox1.getSelectedIndex();
+        if (index < 0) {
+            // La liste a été vidée ou aucun élément n'est sélectionné. On ignore.
+            System.out.println("DEBUG: Sélection JComboBox ignorée (index < 0).");
+            return;
+        }
+    
         if (tab_id_cat == null || tab_id_cat.isEmpty()) {
             // La liste n'est pas prête, ignorez l'événement pour l'instant.
             System.out.println("DEBUG: tab_id_cat est vide, recherche ignorée.");
             return; 
         }
-        int index = jComboBox1.getSelectedIndex();
         search_cat = tab_id_cat.get(index);
         search_word = jTextField1.getText();
         fill_note_list(search_word, search_cat);
@@ -306,16 +338,72 @@ public class Home extends javax.swing.JFrame {
         // Exportation des données
         int choix = JOptionPane.showConfirmDialog(
             this,
-            "Vous etes sur le point d'exporter toutes vos notes. Vous confirmez ?",
+            "Vous etes sur le point d'exporter toutes vos notes.\nLes notes seront exporter au format JSON dans votre repertoire personnel\n Vous confirmez ?",
             "Confirmation",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE
         );
         if (choix == JOptionPane.YES_OPTION) {
             String msg = ExportManager.exportDatabase();
+            NotificationManager.notify("Moon Note par GZ", msg);
             JOptionPane.showMessageDialog(this, msg, "Exportation", HEIGHT);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        try {
+            note_id = "0";
+            search_cat = "0";
+            search_word = "";
+            jComboBox1.removeAllItems();
+            refresh_cat();
+            fill_note_list(search_word, search_cat);
+            jTextField1.setText("");
+            jComboBox1.setSelectedIndex(0);
+            DialogMsg.successMsg("Actualisation ok!");
+        } catch (Exception e) {
+            DialogMsg.errorMsg("Erreur lors de l'actualisation\n"+e.getLocalizedMessage());
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // Action d'importation des notes
+        // 1. Créer le JFileChooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // 2. (Optionnel) Définir le répertoire de départ (si vous voulez cibler un dossier spécifique)
+        // fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"))); 
+
+        // 3. (Optionnel) Définir un filtre pour n'afficher que certains types de fichiers (ex: images)
+        //fileChooser.setFileFilter(new FileNameExtensionFilter("Images (PNG, JPG)", "png", "jpg", "jpeg"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Fichiers JSON (*.json)", "json"));
+
+        // 4. Afficher la boîte de dialogue "Ouvrir"
+        int result = fileChooser.showOpenDialog(this);
+
+        // 5. Gérer le résultat de la sélection
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // L'utilisateur a cliqué sur "Ouvrir" ou "Sélectionner"
+
+            // Récupérer le fichier sélectionné
+            java.io.File selectedFile = fileChooser.getSelectedFile();
+
+            // Afficher le chemin (pour vérification)
+            String filePath = selectedFile.getAbsolutePath();
+            System.out.println("Fichier sélectionné : " + filePath);
+
+            // 🚀 Lancer l'importation
+            String report = ImportManager.importDatabase(filePath);
+
+            // Afficher le rapport
+            JOptionPane.showMessageDialog(this, report, "Rapport d'Importation", JOptionPane.INFORMATION_MESSAGE);
+
+        } else if (result == JFileChooser.CANCEL_OPTION) {
+            // L'utilisateur a cliqué sur "Annuler" ou fermé la fenêtre
+            System.out.println("Sélection annulée par l'utilisateur.");
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,11 +430,11 @@ public class Home extends javax.swing.JFrame {
         // java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
     }
     
-    public void fill_note_list(String search_word, int search_cat){
-        String[] auteur = {"Titre", "Catégorie", "Date de création"};
+    public void fill_note_list(String search_word, String search_cat){
+        String[] header = {"Titre", "Catégorie", "Date de création"};
         String[] note_data = new String[3];
-        DefaultTableModel model = new DefaultTableModel(null, auteur);
-        list = note.read(search_word, search_cat);
+        DefaultTableModel model = new DefaultTableModel(null, header);
+        this.list = note.read(search_word, search_cat);
         tab_id_note.clear();
 
         try {
@@ -355,7 +443,7 @@ public class Home extends javax.swing.JFrame {
                 note_data[1] = row.get("categorie_nom").toString();
                 note_data[2] = TimeConvert.formatDateTime(row.get("created_at").toString());
                 model.addRow(note_data);
-                tab_id_note.add((Integer)row.get("id"));
+                tab_id_note.add(row.get("id").toString());
             }
             this.jTable1.setModel(model);
         } catch (Exception e) {
@@ -366,12 +454,14 @@ public class Home extends javax.swing.JFrame {
     public void refresh_cat(){
         CategoryDAO cat = new CategoryDAO();
         try {
-            List<Map<String, Object>> list_cat = cat.read("");
+            String nom_cat = "";
+            List<Map<String, Object>> list_cat = cat.read(nom_cat);
+            jComboBox1.removeAllItems();
             jComboBox1.addItem("Toutes les catégories");
-            tab_id_cat.add(0);
+            tab_id_cat.add("0");
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
-                tab_id_cat.add((Integer)list.get("id"));
+                tab_id_cat.add(list.get("id").toString());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des catégories...\n"+e.getLocalizedMessage());
@@ -383,8 +473,11 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
