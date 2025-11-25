@@ -6,12 +6,12 @@ package com.mycompany.moon.view;
 
 import com.mycompany.moon.model.CategoryDAO;
 import com.mycompany.moon.model.NoteDAO;
-import java.awt.TextField;
-import java.sql.ResultSet;
+import java.awt.Image;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.List;
 import java.util.Map;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -21,13 +21,14 @@ public class EditNote extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditNote.class.getName());
 
-    private ArrayList<Integer> tab_id_cat = new ArrayList<>();
-    private int id_note, id_categorie;
+    private ArrayList<String> tab_id_cat = new ArrayList<>();
+    private String id_note;
+    private String id_categorie;
     private Home home;
     /**
      * Creates new form CreateNote
      */
-    public EditNote(int id_note, Home home) {
+    public EditNote(String id_note, Home home) {
         initComponents();
         this.id_note = id_note;
         CategoryDAO cat = new CategoryDAO();
@@ -41,19 +42,27 @@ public class EditNote extends javax.swing.JFrame {
             for (Map<String, Object> list : note_data) {
                 jTextField1.setText(list.get("titre").toString());
                 jTextArea1.setText(list.get("contenu").toString());
-                id_categorie = (Integer)list.get("categorie_id");
+                id_categorie = list.get("categorie_id").toString();
             }
             int index = 0;
             for (Map<String, Object> list : list_cat) {
                 jComboBox1.addItem(list.get("nom").toString());
-                if (id_categorie == (Integer)list.get("id")) {
+                if (id_categorie.equals(list.get("id").toString())) {
                     jComboBox1.setSelectedIndex(index);
                 }
-                tab_id_cat.add((Integer)list.get("id"));
+                tab_id_cat.add(list.get("id").toString());
                 index++;
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Erreur lors de la selection des attributs de la note...\n"+e.getLocalizedMessage());
+        }
+        
+        try {
+            Image iconImage = new ImageIcon(getClass().getResource("/icons/app_icon.png")).getImage(); 
+            this.setIconImage(iconImage);
+            System.out.println("Image ok");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger l'icône de la fenêtre: " + e.getMessage());
         }
     }
 
@@ -209,10 +218,10 @@ public class EditNote extends javax.swing.JFrame {
         }
         
         int index = jComboBox1.getSelectedIndex();
-        int id_categorie = tab_id_cat.get(index);
+        String id_categorie = tab_id_cat.get(index).toString();
 
         NoteDAO.update(id_note, id_categorie, title, content);
-        this.home.fill_note_list("", 0);
+        this.home.fill_note_list("", "0");
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 

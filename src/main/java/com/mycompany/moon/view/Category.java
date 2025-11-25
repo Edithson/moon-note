@@ -5,14 +5,14 @@
 package com.mycompany.moon.view;
 
 import com.mycompany.moon.model.CategoryDAO;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import tools.TimeConvert;
 
 /**
  *
@@ -22,16 +22,26 @@ public class Category extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Category.class.getName());
 
-    private ArrayList<Integer> tab_id_cat = new ArrayList<>();
+    private ArrayList<String> tab_id_cat = new ArrayList<>();
     List<Map<String, Object>> list = null;
     private CategoryDAO cat = new CategoryDAO();
-    private int cat_id;
+    private String cat_id;
+    private Home home;
     /**
      * Creates new form Category
      */
-    public Category() {
+    public Category(Home home) {
         initComponents();
         fill_cat_list("");
+        this.home = home;
+        
+        try {
+            Image iconImage = new ImageIcon(getClass().getResource("/icons/app_icon.png")).getImage(); 
+            this.setIconImage(iconImage);
+            System.out.println("Image ok");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger l'icône de la fenêtre: " + e.getMessage());
+        }
     }
 
     /**
@@ -144,6 +154,7 @@ public class Category extends javax.swing.JFrame {
             return;
         }
         cat.insert(nom);
+        this.home.refresh_cat();
         jTextField1.setText("");
         fill_cat_list("");
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -159,7 +170,7 @@ public class Category extends javax.swing.JFrame {
         int index = jTable1.getSelectedRow();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         cat_id = tab_id_cat.get(index);
-        if (cat_id == 1) {
+        if (cat_id == "1") {
             JOptionPane.showMessageDialog(
                 this, // Fenêtre parente (null pour aucune)
                 "On ne supprime pas la catégorie de base !", // Le message
@@ -178,12 +189,13 @@ public class Category extends javax.swing.JFrame {
         if (choix == JOptionPane.YES_OPTION) {
             cat.delete(cat_id);
             fill_cat_list("");
+            this.home.refresh_cat();
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // Mise à jour d'une catégorie
-        if (cat_id == 1) {
+        if (cat_id == "1") {
             JOptionPane.showMessageDialog(
                 this, // Fenêtre parente (null pour aucune)
                 "On ne modifie pas la catégorie de base !", // Le message
@@ -193,16 +205,22 @@ public class Category extends javax.swing.JFrame {
             return;
         }
         JTextField textField = new JTextField();
+        List<Map<String, Object>> info_cat = cat.read("", cat_id);
+        if (!info_cat.isEmpty()) {
+            for (Map<String, Object> categorie : info_cat) {
+                textField.setText(categorie.get("nom").toString());
+            }
+        }
         Object[] message = {
             "Nom de la catégorie :", textField
         };
 
-        Object[] options = {"Valider", "Annuler"};
+        Object[] options = {"Modifier", "Annuler"};
 
         int choice = JOptionPane.showOptionDialog(
             null,
             message,
-            "Saisie",
+            textField.getText(),
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.PLAIN_MESSAGE,
             null,
@@ -223,6 +241,7 @@ public class Category extends javax.swing.JFrame {
             }
             cat.update(cat_id, valeur);
             fill_cat_list("");
+            this.home.refresh_cat();
         }
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
@@ -268,7 +287,7 @@ public class Category extends javax.swing.JFrame {
             for (Map<String, Object> row : list) {
                 note_data[0] = row.get("nom").toString();
                 model.addRow(note_data);
-                tab_id_cat.add((Integer)row.get("id"));
+                tab_id_cat.add(row.get("id").toString());
             }
             this.jTable1.setModel(model);
         } catch (Exception e) {
